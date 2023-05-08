@@ -41,31 +41,29 @@ func (res resource) PlaceOrder(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("error in decoding", err)
 	}
-	orderId := NewOrder()
 
 	resp := model.OrderResponse{}
 	resp.Total = 0.0
 	for _, o := range req.Orders {
 		v, ok := res.m[o.ProductId]
 		if !ok {
-			fmt.Println("product is not available")
 			api.JsonResponse(w, http.StatusInternalServerError, api.NewResponse(false, "product is not available", fmt.Errorf("product is not available")))
 			return
 		}
 		if v.Quantity < o.Quantity {
-			fmt.Println("required quantity is not available")
 			api.JsonResponse(w, http.StatusInternalServerError, api.NewResponse(false, "required quantity is not available", fmt.Errorf("required quantity is not available")))
+			return
+		}
+		if o.Quantity > 10 {
+			api.JsonResponse(w, http.StatusInternalServerError, api.NewResponse(false, "max quantity allowed is 10", fmt.Errorf("max quantity allowed is 10")))
 			return
 		}
 		prodId := o.ProductId
 		prod, ok := res.m[prodId]
-		fmt.Println("prod is ", prod)
 		if ok {
 			prod.Quantity -= o.Quantity
 		}
-
-		fmt.Println("after prd is ", prod)
-
+		orderId := NewOrder()
 		resp.Total = resp.Total + v.Price*float64(o.Quantity)
 		resp.DiscountPrice = 0.0
 		resp.Success = true

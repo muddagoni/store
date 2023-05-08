@@ -89,7 +89,6 @@ func (res resource) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 
 	for _, p := range res.m {
 		if p.ProductId == prodId {
-			fmt.Println("Product id is ", prodId, id)
 			p := model.ProductReq{
 				Product: model.Product{
 					ProductId:    prodId,
@@ -100,7 +99,6 @@ func (res resource) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 					Category:     req.Category,
 				},
 			}
-			fmt.Println("my porod is ", prodId)
 			res.m[prodId] = &p.Product
 			api.JsonResponse(w, http.StatusOK, api.NewResponse(true, "product is updated successfylly", nil))
 			return
